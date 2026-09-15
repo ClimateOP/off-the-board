@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Off The Board — Simulator</title>
+    <title>Off The Board</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
@@ -17,11 +17,8 @@
         --ink: #e7e9f2;
         --ink-dim: #8991a8;
         --blue: #3f7fc4;
-        --blue-dim: #1c3350;
         --green: #3fae74;
-        --green-dim: #173a29;
         --black-word: #c23b3b;
-        --black-dim: #2a1414;
       }
       * {
         box-sizing: border-box;
@@ -30,147 +27,109 @@
       body {
         margin: 0;
         height: 100%;
+        width: 100%;
+        overflow: hidden;
+        background: var(--void);
+        color: var(--ink);
+        font-family: 'IBM Plex Sans', sans-serif;
       }
-      body {
+      .screen {
+        height: 100vh;
+        width: 100vw;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
         background:
           radial-gradient(
             ellipse at 20% -10%,
-            rgba(63, 127, 196, 0.08),
+            rgba(63, 127, 196, 0.09),
             transparent 45%
           ),
           radial-gradient(
             ellipse at 90% 110%,
-            rgba(194, 59, 59, 0.06),
+            rgba(194, 59, 59, 0.07),
             transparent 45%
           ),
           var(--void);
-        color: var(--ink);
-        font-family: 'IBM Plex Sans', sans-serif;
-        min-height: 100%;
       }
-      .wrap {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 32px 24px 80px;
-      }
-      header.top {
+      .screen.active {
         display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        border-bottom: 1px solid var(--line);
-        padding-bottom: 20px;
-        margin-bottom: 28px;
-        flex-wrap: wrap;
-        gap: 12px;
-      }
-      h1 {
-        font-family: 'Cinzel', serif;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        font-size: 28px;
-        margin: 0;
-        color: var(--ink);
-      }
-      h1 span {
-        color: var(--black-word);
-      }
-      .tagline {
-        color: var(--ink-dim);
-        font-size: 13px;
-        margin-top: 4px;
-      }
-      .modebar {
-        display: flex;
-        gap: 8px;
-      }
-      .modebtn {
-        background: var(--panel-2);
-        border: 1px solid var(--line);
-        color: var(--ink-dim);
-        padding: 9px 16px;
-        border-radius: 3px;
-        font-size: 13px;
-        cursor: pointer;
-        font-family: 'IBM Plex Mono', monospace;
-      }
-      .modebtn.active {
-        color: var(--void);
-        background: var(--ink);
-        border-color: var(--ink);
-      }
-      .layout {
-        display: grid;
-        grid-template-columns: 300px 1fr;
-        gap: 28px;
-      }
-      @media (max-width: 900px) {
-        .layout {
-          grid-template-columns: 1fr;
-        }
       }
 
-      .panel {
+      h1.title {
+        font-family: 'Cinzel', serif;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        font-size: 44px;
+        margin: 0 0 48px;
+        text-align: center;
+      }
+      h1.title span {
+        color: var(--black-word);
+      }
+
+      .choice-row {
+        display: flex;
+        gap: 22px;
+      }
+      .choice-card {
+        width: 220px;
+        padding: 30px 20px;
         background: var(--panel);
         border: 1px solid var(--line);
-        border-radius: 4px;
-        padding: 18px;
-        margin-bottom: 18px;
+        border-radius: 6px;
+        text-align: center;
+        cursor: pointer;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
       }
-      .panel h2 {
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.12em;
-        color: var(--ink-dim);
-        font-weight: 500;
-        margin: 0 0 14px;
-        font-family: 'IBM Plex Mono', monospace;
+      .choice-card:hover {
+        border-color: var(--blue);
+        transform: translateY(-2px);
       }
-      .field {
-        margin-bottom: 10px;
+      .choice-card .big {
+        font-family: 'Cinzel', serif;
+        font-size: 22px;
+        margin-bottom: 8px;
       }
-      .field label {
-        display: block;
-        font-size: 11px;
-        color: var(--ink-dim);
-        margin-bottom: 4px;
-      }
-      input[type='text'],
-      input[type='number'] {
-        width: 100%;
-        background: var(--void);
-        border: 1px solid var(--line);
-        color: var(--ink);
-        padding: 7px 9px;
-        border-radius: 3px;
+      .choice-card .sub {
         font-size: 13px;
-        font-family: 'IBM Plex Sans', sans-serif;
+        color: var(--ink-dim);
       }
-      input[type='text']:focus,
-      input[type='number']:focus {
-        outline: none;
+
+      .player-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 340px;
+      }
+      .player-row {
+        padding: 16px 20px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+      }
+      .player-row:hover {
         border-color: var(--blue);
       }
-      select {
-        width: 100%;
-        background: var(--void);
-        border: 1px solid var(--line);
-        color: var(--ink);
-        padding: 8px 9px;
-        border-radius: 3px;
-        font-size: 13px;
+      .player-row .pname {
+        font-size: 18px;
       }
       .role-tag {
-        display: inline-block;
         font-family: 'IBM Plex Mono', monospace;
         font-size: 10px;
         letter-spacing: 0.06em;
-        padding: 2px 7px;
+        padding: 3px 8px;
         border-radius: 2px;
-        margin-left: 6px;
-        vertical-align: middle;
       }
       .role-tag.spirit {
-        background: var(--blue-dim);
+        background: #1c3350;
         color: #8ec1f0;
       }
       .role-tag.soul {
@@ -179,138 +138,109 @@
         border: 1px solid var(--line);
       }
 
-      .team-block {
-        border-top: 1px solid var(--line);
-        padding-top: 10px;
-        margin-top: 10px;
-      }
-      .team-block:first-child {
-        border-top: none;
-        padding-top: 0;
-        margin-top: 0;
-      }
-      .team-title {
+      .backlink {
+        margin-top: 34px;
         font-size: 12px;
         color: var(--ink-dim);
-        margin-bottom: 8px;
-        font-family: 'IBM Plex Mono', monospace;
-      }
-
-      button.btn {
-        background: var(--panel-2);
-        border: 1px solid var(--line);
-        color: var(--ink);
-        padding: 9px 14px;
-        border-radius: 3px;
-        font-size: 12.5px;
         cursor: pointer;
         font-family: 'IBM Plex Mono', monospace;
-        width: 100%;
-        margin-top: 8px;
       }
-      button.btn:hover {
-        border-color: var(--blue);
-      }
-      button.btn.danger:hover {
-        border-color: var(--black-word);
-      }
-      button.btn.primary {
-        background: var(--ink);
-        color: var(--void);
-        border-color: var(--ink);
-      }
-
-      .timer-display {
-        font-family: 'IBM Plex Mono', monospace;
-        font-size: 42px;
-        text-align: center;
-        letter-spacing: 0.04em;
-        padding: 10px 0 4px;
+      .backlink:hover {
         color: var(--ink);
       }
-      .timer-display.low {
-        color: var(--black-word);
-      }
-      .timer-row {
-        display: flex;
-        gap: 8px;
-      }
-      .timer-row button {
-        flex: 1;
-      }
 
-      /* board */
-      .stage {
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: 4px;
-        padding: 22px;
+      /* GAME SCREEN */
+      #gameScreen {
+        align-items: stretch;
+        justify-content: flex-start;
+        padding: 28px 40px;
+        position: relative;
       }
-      .stage-top {
+      .game-top {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
-        flex-wrap: wrap;
-        gap: 10px;
+        align-items: flex-start;
+        margin-bottom: 22px;
       }
-      .viewer-select {
+      .names-block {
         display: flex;
-        align-items: center;
-        gap: 10px;
+        gap: 28px;
+        flex-wrap: wrap;
       }
-      .viewer-select label {
-        font-size: 11px;
+      .name-chip {
+        font-size: 15px;
         color: var(--ink-dim);
         font-family: 'IBM Plex Mono', monospace;
       }
-      .viewer-select select {
-        width: 220px;
+      .name-chip b {
+        color: var(--ink);
+        font-family: 'IBM Plex Sans', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
       }
-      .legend {
-        display: flex;
-        gap: 14px;
-        font-size: 11px;
+      .name-chip.me b {
+        color: var(--blue);
+      }
+
+      .timer-box {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 46px;
+        padding: 4px 22px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        cursor: pointer;
+        user-select: none;
+        background: var(--panel);
+        min-width: 110px;
+        text-align: center;
+      }
+      .timer-box.paused {
         color: var(--ink-dim);
-        align-items: center;
+        border-color: var(--ink-dim);
       }
-      .legend .dot {
-        width: 9px;
-        height: 9px;
-        display: inline-block;
-        border-radius: 1px;
-        margin-right: 5px;
-        vertical-align: middle;
+      .timer-box.low {
+        color: var(--black-word);
+        border-color: var(--black-word);
+      }
+
+      .dots {
+        position: absolute;
+        top: 26px;
+        right: 40px;
+        font-size: 26px;
+        color: var(--ink-dim);
+        cursor: pointer;
+        padding: 4px 10px;
+        letter-spacing: 2px;
+        line-height: 1;
+      }
+      .dots:hover {
+        color: var(--ink);
       }
 
       .board {
+        flex: 1;
         display: grid;
         grid-template-columns: repeat(5, 1fr);
-        gap: 8px;
+        grid-template-rows: repeat(5, 1fr);
+        gap: 12px;
+        height: calc(100vh - 190px);
       }
       .cell {
-        aspect-ratio: 5/3;
-        border-radius: 3px;
+        border-radius: 5px;
         display: flex;
         align-items: center;
         justify-content: center;
         text-align: center;
-        padding: 6px;
-        font-size: 14px;
-        font-weight: 500;
+        padding: 8px;
+        font-size: 26px;
+        font-weight: 600;
         cursor: pointer;
         user-select: none;
         border: 1px solid var(--line);
         background: var(--panel-2);
         color: var(--ink);
-        transition:
-          transform 0.12s ease,
-          box-shadow 0.12s ease;
-        position: relative;
-        line-height: 1.2;
-      }
-      .cell:hover {
-        transform: translateY(-1px);
+        letter-spacing: 0.01em;
       }
       .cell.blue {
         background: linear-gradient(160deg, var(--blue), #2a5c8f);
@@ -326,53 +256,103 @@
         background: linear-gradient(160deg, #1a1010, #000);
         color: var(--black-word);
         border-color: #3a1616;
-        box-shadow: 0 0 14px rgba(194, 59, 59, 0.15) inset;
+        box-shadow: 0 0 16px rgba(194, 59, 59, 0.18) inset;
       }
-      .cell.neutral-hidden {
-        background: var(--panel-2);
+
+      /* EDIT MODAL */
+      #editOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(5, 6, 10, 0.88);
+        z-index: 50;
+        overflow-y: auto;
+        padding: 40px;
+      }
+      #editOverlay.active {
+        display: block;
+      }
+      .edit-panel {
+        max-width: 900px;
+        margin: 0 auto;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 28px 32px 36px;
+      }
+      .edit-panel h2 {
+        font-family: 'Cinzel', serif;
+        font-size: 20px;
+        margin: 0 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .edit-close {
+        font-size: 22px;
+        color: var(--ink-dim);
+        cursor: pointer;
+      }
+      .edit-close:hover {
         color: var(--ink);
       }
-      .cell .word {
-        letter-spacing: 0.01em;
+      .edit-section {
+        margin-bottom: 26px;
       }
-      .cell.revealed::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: 3px;
-        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
-      }
-      .cell .revealmark {
-        position: absolute;
-        top: 4px;
-        right: 6px;
-        font-size: 9px;
-        color: rgba(255, 255, 255, 0.5);
+      .edit-section h3 {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--ink-dim);
+        margin: 0 0 12px;
         font-family: 'IBM Plex Mono', monospace;
+      }
+      .edit-grid-names {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .edit-field label {
+        display: block;
+        font-size: 11px;
+        color: var(--ink-dim);
+        margin-bottom: 4px;
+      }
+      input[type='text'],
+      input[type='number'] {
+        width: 100%;
+        background: var(--void);
+        border: 1px solid var(--line);
+        color: var(--ink);
+        padding: 8px 10px;
+        border-radius: 3px;
+        font-size: 13px;
+      }
+      input[type='text']:focus,
+      input[type='number']:focus {
+        outline: none;
+        border-color: var(--blue);
       }
 
       .setup-grid {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
-        gap: 6px;
-      }
-      .setup-cell {
-        position: relative;
+        gap: 8px;
       }
       .setup-cell input {
         font-size: 11px;
         text-align: center;
         padding: 6px 4px;
       }
-      .setup-cell .swatches {
+      .swatches {
         display: flex;
         justify-content: center;
         gap: 3px;
-        margin-top: 3px;
+        margin-top: 4px;
       }
       .sw {
-        width: 14px;
-        height: 14px;
+        width: 15px;
+        height: 15px;
         border-radius: 2px;
         cursor: pointer;
         border: 1px solid rgba(255, 255, 255, 0.15);
@@ -393,7 +373,6 @@
         outline: 2px solid var(--ink);
         outline-offset: 1px;
       }
-
       .counts {
         display: flex;
         gap: 14px;
@@ -406,117 +385,97 @@
         color: var(--ink);
       }
 
-      .hint {
-        font-size: 11px;
-        color: var(--ink-dim);
-        margin-top: 10px;
-        line-height: 1.5;
+      .edit-row-btns {
+        display: flex;
+        gap: 10px;
+        margin-top: 6px;
+      }
+      button.btn {
+        background: var(--panel-2);
+        border: 1px solid var(--line);
+        color: var(--ink);
+        padding: 9px 16px;
+        border-radius: 3px;
+        font-size: 12.5px;
+        cursor: pointer;
+        font-family: 'IBM Plex Mono', monospace;
+      }
+      button.btn:hover {
+        border-color: var(--blue);
+      }
+      button.btn.danger:hover {
+        border-color: var(--black-word);
       }
     </style>
   </head>
   <body>
-    <div class="wrap">
-      <header class="top">
-        <div>
-          <h1>OFF THE <span>BOARD</span></h1>
-          <div class="tagline">Production simulator — not a playable game</div>
+    <!-- MODE SELECT -->
+    <div class="screen active" id="modeScreen">
+      <h1 class="title">OFF THE <span>BOARD</span></h1>
+      <div class="choice-row">
+        <div class="choice-card" data-mode="duo">
+          <div class="big">Duo</div>
+          <div class="sub">2 players</div>
         </div>
-        <div class="modebar">
-          <button class="modebtn active" id="tabSetup">Setup</button>
-          <button class="modebtn" id="tabPlay">Player View</button>
+        <div class="choice-card" data-mode="team">
+          <div class="big">Team</div>
+          <div class="sub">6 players</div>
         </div>
-      </header>
+      </div>
+    </div>
 
-      <div class="layout">
-        <!-- LEFT CONTROL PANEL -->
-        <div>
-          <div class="panel">
-            <h2>Game Mode</h2>
-            <div class="field">
-              <select id="modeSelect">
-                <option value="duo">Duo — 2 players</option>
-                <option value="team">Team — 6 players</option>
-              </select>
-            </div>
-          </div>
+    <!-- PLAYER SELECT -->
+    <div class="screen" id="playerScreen">
+      <h1 class="title" style="font-size: 30px; margin-bottom: 34px">
+        Who's playing?
+      </h1>
+      <div class="player-list" id="playerList"></div>
+      <div class="backlink" id="backToMode">&larr; change mode</div>
+    </div>
 
-          <div class="panel" id="rosterPanel">
-            <h2>Roster</h2>
-            <div id="rosterFields"></div>
-          </div>
+    <!-- GAME SCREEN -->
+    <div class="screen" id="gameScreen">
+      <div class="game-top">
+        <div class="names-block" id="namesBlock"></div>
+        <div class="timer-box" id="timerBox">60</div>
+      </div>
+      <div class="board" id="board"></div>
+      <div class="dots" id="dotsMenu">&#8942;</div>
+    </div>
 
-          <div class="panel">
-            <h2>Turn Timer</h2>
-            <div class="field">
-              <label>Duration (seconds)</label>
-              <input type="number" id="timerDuration" value="60" min="5" />
-            </div>
-            <div class="timer-display" id="timerDisplay">60</div>
-            <div class="timer-row">
-              <button class="btn primary" id="timerStart">Start</button>
-              <button class="btn" id="timerPause">Pause</button>
-              <button class="btn danger" id="timerReset">Reset</button>
-            </div>
-          </div>
+    <!-- EDIT OVERLAY -->
+    <div id="editOverlay">
+      <div class="edit-panel">
+        <h2>Edit <span class="edit-close" id="editClose">&times;</span></h2>
 
-          <div class="panel">
-            <h2>Board Controls</h2>
-            <button class="btn" id="shuffleColors">
-              Shuffle Colors (10 / 10 / 5)
-            </button>
-            <button class="btn danger" id="clearReveals">
-              Clear All Reveals
-            </button>
-            <div class="hint">
-              Setup tab: click a swatch under a word to set its true color.
-              Player View tab: click a cell to reveal/hide it (simulates a
-              guess).
-            </div>
-          </div>
+        <div class="edit-section" id="namesEditSection">
+          <h3>Player Names</h3>
+          <div class="edit-grid-names" id="namesEditGrid"></div>
         </div>
 
-        <!-- RIGHT STAGE -->
-        <div class="stage">
-          <div id="setupView">
-            <div class="stage-top">
-              <div
-                style="
-                  font-size: 12px;
-                  color: var(--ink-dim);
-                  font-family: 'IBM Plex Mono', monospace;
-                "
-              >
-                DIRECTOR VIEW — full colors always visible
-              </div>
-            </div>
-            <div class="counts" id="countsBar"></div>
-            <div class="setup-grid" id="setupGrid"></div>
-          </div>
+        <div class="edit-section">
+          <h3>Board — words &amp; true colors</h3>
+          <div class="counts" id="countsBar"></div>
+          <div class="setup-grid" id="setupGrid"></div>
+        </div>
 
-          <div id="playView" style="display: none">
-            <div class="stage-top">
-              <div class="viewer-select">
-                <label>PLAYING AS</label>
-                <select id="playerSelect"></select>
-                <span class="role-tag" id="roleTag"></span>
-              </div>
-              <div class="legend">
-                <span
-                  ><span class="dot" style="background: var(--blue)"></span
-                  >Blue</span
-                >
-                <span
-                  ><span class="dot" style="background: var(--green)"></span
-                  >Green</span
-                >
-                <span
-                  ><span class="dot" style="background: #3a1616"></span>Off the
-                  board</span
-                >
-              </div>
-            </div>
-            <div class="board" id="playBoard"></div>
-          </div>
+        <div class="edit-section">
+          <h3>Timer duration (seconds)</h3>
+          <input
+            type="number"
+            id="timerDurationInput"
+            style="max-width: 140px"
+            min="5"
+          />
+        </div>
+
+        <div class="edit-row-btns">
+          <button class="btn" id="backToPlayerSelect">
+            Change player / mode
+          </button>
+          <button class="btn danger" id="clearReveals">
+            Clear revealed cells
+          </button>
         </div>
       </div>
     </div>
@@ -550,6 +509,35 @@
         'JACKET',
       ];
 
+      // fixed, deterministic default layout (not randomized) so retakes stay consistent
+      const DEFAULT_COLORS = [
+        'blue',
+        'green',
+        'blue',
+        'black',
+        'green',
+        'green',
+        'blue',
+        'neutral',
+        'blue',
+        'green',
+        'black',
+        'neutral',
+        'green',
+        'blue',
+        'neutral',
+        'green',
+        'black',
+        'blue',
+        'neutral',
+        'green',
+        'blue',
+        'neutral',
+        'black',
+        'blue',
+        'green',
+      ];
+
       let state = {
         mode: 'team',
         names: {
@@ -560,26 +548,11 @@
           },
         },
         words: DEFAULT_WORDS.slice(),
-        colors: [],
-        revealed: [],
+        colors: DEFAULT_COLORS.slice(),
+        revealed: Array(25).fill(false),
         selectedPlayer: null,
         timer: { total: 60, remaining: 60, running: false, intervalId: null },
       };
-
-      function freshColors() {
-        const arr = Array(25).fill('neutral');
-        const idx = [...Array(25).keys()];
-        for (let i = idx.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [idx[i], idx[j]] = [idx[j], idx[i]];
-        }
-        idx.slice(0, 10).forEach((i) => (arr[i] = 'blue'));
-        idx.slice(10, 20).forEach((i) => (arr[i] = 'green'));
-        idx.slice(20, 25).forEach((i) => (arr[i] = 'black'));
-        return arr;
-      }
-      state.colors = freshColors();
-      state.revealed = Array(25).fill(false);
 
       function getRoster() {
         if (state.mode === 'duo') {
@@ -628,40 +601,163 @@
         ];
       }
 
-      function renderRoster() {
-        const box = document.getElementById('rosterFields');
-        box.innerHTML = '';
+      function showScreen(id) {
+        document
+          .querySelectorAll('.screen')
+          .forEach((s) => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+      }
+
+      // ---- Mode select ----
+      document.querySelectorAll('.choice-card').forEach((card) => {
+        card.addEventListener('click', () => {
+          state.mode = card.dataset.mode;
+          renderPlayerList();
+          showScreen('playerScreen');
+        });
+      });
+
+      // ---- Player select ----
+      function renderPlayerList() {
+        const list = document.getElementById('playerList');
+        const roster = getRoster();
+        list.innerHTML = roster
+          .map(
+            (p) => `
+    <div class="player-row" data-id="${p.id}">
+      <span class="pname">${p.name}</span>
+      <span class="role-tag ${p.role}">${p.role.toUpperCase()}</span>
+    </div>
+  `,
+          )
+          .join('');
+        list.querySelectorAll('.player-row').forEach((row) => {
+          row.addEventListener('click', () => {
+            state.selectedPlayer = row.dataset.id;
+            enterGame();
+          });
+        });
+      }
+      document
+        .getElementById('backToMode')
+        .addEventListener('click', () => showScreen('modeScreen'));
+      document
+        .getElementById('backToPlayerSelect')
+        .addEventListener('click', () => {
+          closeEdit();
+          renderPlayerList();
+          showScreen('playerScreen');
+        });
+
+      // ---- Game screen ----
+      function enterGame() {
+        renderNames();
+        renderBoard();
+        showScreen('gameScreen');
+      }
+
+      function renderNames() {
+        const roster = getRoster();
+        const me = roster.find((p) => p.id === state.selectedPlayer);
+        document.getElementById('namesBlock').innerHTML = roster
+          .map(
+            (p) => `
+    <span class="name-chip ${p.id === me.id ? 'me' : ''}"><b>${p.name}</b></span>
+  `,
+          )
+          .join('');
+      }
+
+      function renderBoard() {
+        const roster = getRoster();
+        const player =
+          roster.find((p) => p.id === state.selectedPlayer) || roster[0];
+        const isSpirit = player.role === 'spirit';
+        const board = document.getElementById('board');
+        board.innerHTML = '';
+        for (let i = 0; i < 25; i++) {
+          const cell = document.createElement('div');
+          const isRevealed = state.revealed[i];
+          let cls = '';
+          if (isSpirit || isRevealed) {
+            cls = state.colors[i] === 'neutral' ? '' : state.colors[i];
+          }
+          cell.className = 'cell ' + cls;
+          cell.textContent = state.words[i];
+          cell.addEventListener('click', () => {
+            state.revealed[i] = !state.revealed[i];
+            renderBoard();
+          });
+          board.appendChild(cell);
+        }
+      }
+
+      // ---- Timer: click to pause/resume, loops on reaching zero ----
+      const timerBox = document.getElementById('timerBox');
+      function updateTimerBox() {
+        timerBox.textContent = state.timer.remaining;
+        timerBox.classList.toggle(
+          'low',
+          state.timer.remaining <= 10 && state.timer.running,
+        );
+        timerBox.classList.toggle('paused', !state.timer.running);
+      }
+      function tick() {
+        if (state.timer.remaining > 0) {
+          state.timer.remaining -= 1;
+        } else {
+          state.timer.remaining = state.timer.total; // loop, never hard-stops
+        }
+        updateTimerBox();
+      }
+      function startTimer() {
+        if (state.timer.running) return;
+        state.timer.running = true;
+        state.timer.intervalId = setInterval(tick, 1000);
+        updateTimerBox();
+      }
+      function pauseTimer() {
+        clearInterval(state.timer.intervalId);
+        state.timer.running = false;
+        updateTimerBox();
+      }
+      timerBox.addEventListener('click', () => {
+        if (state.timer.running) pauseTimer();
+        else startTimer();
+      });
+
+      // ---- Edit overlay ----
+      const editOverlay = document.getElementById('editOverlay');
+      document.getElementById('dotsMenu').addEventListener('click', openEdit);
+      document.getElementById('editClose').addEventListener('click', closeEdit);
+      function openEdit() {
+        pauseTimer();
+        renderNamesEdit();
+        renderSetupGrid();
+        document.getElementById('timerDurationInput').value = state.timer.total;
+        editOverlay.classList.add('active');
+      }
+      function closeEdit() {
+        editOverlay.classList.remove('active');
+        renderNames();
+        renderBoard();
+      }
+
+      function renderNamesEdit() {
+        const box = document.getElementById('namesEditGrid');
         if (state.mode === 'duo') {
           box.innerHTML = `
-      <div class="field">
-        <label>Player 1 <span class="role-tag spirit">SPIRIT</span></label>
-        <input type="text" data-path="duo.p1" value="${state.names.duo.p1}">
-      </div>
-      <div class="field">
-        <label>Player 2 <span class="role-tag soul">SOUL</span></label>
-        <input type="text" data-path="duo.p2" value="${state.names.duo.p2}">
-      </div>
+      <div class="edit-field"><label>Player 1 (Spirit)</label><input type="text" data-path="duo.p1" value="${state.names.duo.p1}"></div>
+      <div class="edit-field"><label>Player 2 (Soul)</label><input type="text" data-path="duo.p2" value="${state.names.duo.p2}"></div>
     `;
         } else {
           box.innerHTML = `
-      <div class="team-block">
-        <div class="team-title">TEAM 1</div>
-        <div class="field"><label>Spirit <span class="role-tag spirit">SPIRIT</span></label>
-          <input type="text" data-path="team.t1.spirit" value="${state.names.team.t1.spirit}"></div>
-        <div class="field"><label>Soul <span class="role-tag soul">SOUL</span></label>
-          <input type="text" data-path="team.t1.soul1" value="${state.names.team.t1.soul1}"></div>
-        <div class="field"><label>Soul <span class="role-tag soul">SOUL</span></label>
-          <input type="text" data-path="team.t1.soul2" value="${state.names.team.t1.soul2}"></div>
-      </div>
-      <div class="team-block">
-        <div class="team-title">TEAM 2</div>
-        <div class="field"><label>Spirit <span class="role-tag spirit">SPIRIT</span></label>
-          <input type="text" data-path="team.t2.spirit" value="${state.names.team.t2.spirit}"></div>
-        <div class="field"><label>Soul <span class="role-tag soul">SOUL</span></label>
-          <input type="text" data-path="team.t2.soul1" value="${state.names.team.t2.soul1}"></div>
-        <div class="field"><label>Soul <span class="role-tag soul">SOUL</span></label>
-          <input type="text" data-path="team.t2.soul2" value="${state.names.team.t2.soul2}"></div>
-      </div>
+      <div class="edit-field"><label>Team 1 — Spirit</label><input type="text" data-path="team.t1.spirit" value="${state.names.team.t1.spirit}"></div>
+      <div class="edit-field"><label>Team 1 — Soul</label><input type="text" data-path="team.t1.soul1" value="${state.names.team.t1.soul1}"></div>
+      <div class="edit-field"><label>Team 1 — Soul</label><input type="text" data-path="team.t1.soul2" value="${state.names.team.t1.soul2}"></div>
+      <div class="edit-field"><label>Team 2 — Spirit</label><input type="text" data-path="team.t2.spirit" value="${state.names.team.t2.spirit}"></div>
+      <div class="edit-field"><label>Team 2 — Soul</label><input type="text" data-path="team.t2.soul1" value="${state.names.team.t2.soul1}"></div>
+      <div class="edit-field"><label>Team 2 — Soul</label><input type="text" data-path="team.t2.soul2" value="${state.names.team.t2.soul2}"></div>
     `;
         }
         box.querySelectorAll('input').forEach((inp) => {
@@ -670,8 +766,6 @@
             let ref = state.names;
             for (let i = 0; i < path.length - 1; i++) ref = ref[path[i]];
             ref[path[path.length - 1]] = e.target.value;
-            renderPlayerSelect();
-            renderPlayView();
           });
         });
       }
@@ -703,7 +797,6 @@
         grid.querySelectorAll('.wordInput').forEach((inp) => {
           inp.addEventListener('input', (e) => {
             state.words[e.target.dataset.i] = e.target.value.toUpperCase();
-            renderPlayView();
           });
         });
         grid.querySelectorAll('.sw').forEach((sw) => {
@@ -712,145 +805,28 @@
             state.colors[i] = e.target.dataset.color;
             renderSetupGrid();
             renderCounts();
-            renderPlayView();
           });
         });
         renderCounts();
       }
 
-      function renderPlayerSelect() {
-        const sel = document.getElementById('playerSelect');
-        const roster = getRoster();
-        const prev = state.selectedPlayer;
-        sel.innerHTML = roster
-          .map(
-            (p) =>
-              `<option value="${p.id}">${p.name} — Team ${p.team}</option>`,
-          )
-          .join('');
-        const stillExists = roster.find((p) => p.id === prev);
-        state.selectedPlayer = stillExists ? prev : roster[0].id;
-        sel.value = state.selectedPlayer;
-      }
-
-      function renderPlayView() {
-        const roster = getRoster();
-        const player =
-          roster.find((p) => p.id === state.selectedPlayer) || roster[0];
-        const roleTag = document.getElementById('roleTag');
-        roleTag.textContent = player.role.toUpperCase();
-        roleTag.className = 'role-tag ' + player.role;
-
-        const board = document.getElementById('playBoard');
-        board.innerHTML = '';
-        for (let i = 0; i < 25; i++) {
-          const cell = document.createElement('div');
-          const isSpirit = player.role === 'spirit';
-          const isRevealed = state.revealed[i];
-          let visibleColor = 'neutral-hidden';
-          if (isSpirit || isRevealed) {
-            visibleColor = state.colors[i];
-            if (visibleColor === 'neutral') visibleColor = 'neutral-hidden';
-          }
-          cell.className =
-            'cell ' + visibleColor + (isRevealed ? ' revealed' : '');
-          cell.innerHTML = `<span class="word">${state.words[i]}</span>${isRevealed ? '<span class="revealmark">REVEALED</span>' : ''}`;
-          cell.dataset.i = i;
-          cell.addEventListener('click', () => {
-            state.revealed[i] = !state.revealed[i];
-            renderPlayView();
-          });
-          board.appendChild(cell);
-        }
-      }
-
-      // Tabs
-      document.getElementById('tabSetup').addEventListener('click', () => {
-        document.getElementById('tabSetup').classList.add('active');
-        document.getElementById('tabPlay').classList.remove('active');
-        document.getElementById('setupView').style.display = 'block';
-        document.getElementById('playView').style.display = 'none';
-      });
-      document.getElementById('tabPlay').addEventListener('click', () => {
-        document.getElementById('tabPlay').classList.add('active');
-        document.getElementById('tabSetup').classList.remove('active');
-        document.getElementById('playView').style.display = 'block';
-        document.getElementById('setupView').style.display = 'none';
-        renderPlayView();
-      });
-
-      document.getElementById('modeSelect').addEventListener('change', (e) => {
-        state.mode = e.target.value;
-        renderRoster();
-        renderPlayerSelect();
-        renderPlayView();
-      });
-
       document
-        .getElementById('playerSelect')
-        .addEventListener('change', (e) => {
-          state.selectedPlayer = e.target.value;
-          renderPlayView();
-        });
-
-      document.getElementById('shuffleColors').addEventListener('click', () => {
-        state.colors = freshColors();
-        state.revealed = Array(25).fill(false);
-        renderSetupGrid();
-        renderPlayView();
-      });
-      document.getElementById('clearReveals').addEventListener('click', () => {
-        state.revealed = Array(25).fill(false);
-        renderPlayView();
-      });
-
-      // Timer
-      const timerDisplay = document.getElementById('timerDisplay');
-      function updateTimerDisplay() {
-        timerDisplay.textContent = state.timer.remaining;
-        timerDisplay.classList.toggle('low', state.timer.remaining <= 10);
-      }
-      document
-        .getElementById('timerDuration')
+        .getElementById('timerDurationInput')
         .addEventListener('input', (e) => {
           const v = parseInt(e.target.value) || 60;
           state.timer.total = v;
           if (!state.timer.running) {
             state.timer.remaining = v;
-            updateTimerDisplay();
           }
         });
-      document.getElementById('timerStart').addEventListener('click', () => {
-        if (state.timer.running) return;
-        state.timer.running = true;
-        state.timer.intervalId = setInterval(() => {
-          if (state.timer.remaining > 0) {
-            state.timer.remaining -= 1;
-            updateTimerDisplay();
-          } else {
-            clearInterval(state.timer.intervalId);
-            state.timer.running = false;
-          }
-        }, 1000);
-      });
-      document.getElementById('timerPause').addEventListener('click', () => {
-        clearInterval(state.timer.intervalId);
-        state.timer.running = false;
-      });
-      document.getElementById('timerReset').addEventListener('click', () => {
-        clearInterval(state.timer.intervalId);
-        state.timer.running = false;
-        state.timer.remaining = state.timer.total;
-        updateTimerDisplay();
+
+      document.getElementById('clearReveals').addEventListener('click', () => {
+        state.revealed = Array(25).fill(false);
       });
 
       // init
-      document.getElementById('modeSelect').value = state.mode;
-      renderRoster();
-      renderSetupGrid();
-      renderPlayerSelect();
-      renderPlayView();
-      updateTimerDisplay();
+      state.timer.remaining = state.timer.total;
+      updateTimerBox();
     </script>
   </body>
 </html>
