@@ -153,7 +153,7 @@
       #gameScreen {
         align-items: stretch;
         justify-content: flex-start;
-        padding: 26px 40px;
+        padding: 24px 40px 20px;
         position: relative;
       }
 
@@ -162,26 +162,38 @@
         justify-content: center;
         align-items: flex-start;
         gap: 60px;
-        margin-bottom: 22px;
+        margin-bottom: 18px;
       }
       .team-panel {
-        width: 260px;
+        width: 270px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
       }
       .team-panel.right {
-        text-align: right;
+        align-items: flex-end;
       }
-      .team-panel .role-line {
+      .group-label {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        color: var(--ink-dim);
+        margin-bottom: 6px;
+      }
+      .group {
+      }
+      .role-line {
         display: flex;
         align-items: center;
-        gap: 10px;
-        margin-bottom: 8px;
+        gap: 9px;
+        margin-bottom: 5px;
       }
       .team-panel.right .role-line {
         justify-content: flex-end;
       }
       .role-dot {
-        width: 8px;
-        height: 8px;
+        width: 7px;
+        height: 7px;
         border-radius: 50%;
         flex: none;
       }
@@ -192,7 +204,7 @@
         background: var(--ink-dim);
       }
       .pname-edit {
-        font-size: 17px;
+        font-size: 16px;
         font-weight: 600;
         outline: none;
         border-radius: 3px;
@@ -210,14 +222,14 @@
 
       .timer-box {
         font-family: 'IBM Plex Mono', monospace;
-        font-size: 46px;
+        font-size: 44px;
         padding: 4px 22px;
         border: 1px solid var(--line);
         border-radius: 6px;
         cursor: pointer;
         user-select: none;
         background: var(--panel);
-        min-width: 110px;
+        min-width: 130px;
         text-align: center;
         outline: none;
         align-self: center;
@@ -237,7 +249,7 @@
 
       .dots {
         position: absolute;
-        top: 26px;
+        top: 24px;
         right: 40px;
         font-size: 26px;
         color: var(--ink-dim);
@@ -245,6 +257,7 @@
         padding: 4px 10px;
         letter-spacing: 2px;
         line-height: 1;
+        z-index: 5;
       }
       .dots:hover {
         color: var(--ink);
@@ -255,7 +268,7 @@
 
       .edit-pill {
         position: absolute;
-        top: 30px;
+        top: 28px;
         right: 78px;
         font-family: 'IBM Plex Mono', monospace;
         font-size: 10px;
@@ -275,8 +288,9 @@
         display: grid;
         grid-template-columns: repeat(5, 1fr);
         grid-template-rows: repeat(5, 1fr);
-        gap: 12px;
-        height: calc(100vh - 200px);
+        gap: 11px;
+        height: calc(100vh - 310px);
+        min-height: 260px;
       }
       .cell {
         border-radius: 5px;
@@ -306,7 +320,7 @@
         box-shadow: 0 0 16px rgba(194, 59, 59, 0.18) inset;
       }
       .cell-word {
-        font-size: 26px;
+        font-size: 24px;
         font-weight: 600;
         letter-spacing: 0.01em;
         outline: none;
@@ -315,8 +329,75 @@
       .cell-word[contenteditable='true'] {
         cursor: text;
       }
-      .cell:not(.editing) {
+
+      /* HINT BAR */
+      .hint-bar {
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 14px 22px;
+      }
+      .hint-label {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        color: var(--ink-dim);
+        flex: none;
+      }
+      .hint-display {
+        flex: 1;
+        font-size: 26px;
+        font-weight: 600;
+        font-family: 'Cinzel', serif;
+        color: var(--ink);
+        outline: none;
+        min-height: 34px;
+        cursor: text;
+        border-radius: 3px;
+        padding: 2px 8px;
+      }
+      .hint-display:empty::before {
+        content: '—';
+        color: var(--ink-dim);
+      }
+      .hint-input-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: none;
+      }
+      .hint-input-row input {
+        background: var(--void);
+        border: 1px solid var(--line);
+        color: var(--ink);
+        padding: 9px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+        width: 220px;
+        outline: none;
+      }
+      .hint-input-row input:focus {
+        border-color: var(--blue);
+      }
+      .hint-send {
+        background: var(--blue);
+        border: none;
+        color: #eef5ff;
+        width: 36px;
+        height: 36px;
+        border-radius: 4px;
         cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .hint-send:hover {
+        background: #356fac;
       }
     </style>
   </head>
@@ -349,70 +430,78 @@
     <div class="screen" id="gameScreen">
       <div class="game-top">
         <div class="team-panel left" id="teamLeft"></div>
-        <div class="timer-box" id="timerBox">60</div>
+        <div class="timer-box" id="timerBox">01:00</div>
         <div class="team-panel right" id="teamRight"></div>
       </div>
       <div class="board" id="board"></div>
+      <div class="hint-bar">
+        <div class="hint-label">HINT</div>
+        <div class="hint-display" id="hintDisplay" contenteditable="true"></div>
+        <div class="hint-input-row">
+          <input type="text" id="hintInput" placeholder="Type hint…" />
+          <button class="hint-send" id="hintSend">&#10148;</button>
+        </div>
+      </div>
       <div class="edit-pill" id="editPill">EDIT MODE</div>
       <div class="dots" id="dotsMenu">&#8942;</div>
     </div>
 
     <script>
+      // Words + colors taken from the script: black words are the 5 confirmed
+      // off-the-board words Beta reads out ("WIN" "DUO" "OR" "FACE" "DEATH").
       const DEFAULT_WORDS = [
-        'LOGICAL',
-        'OR',
-        'BED',
-        'DEATH',
-        'SITUATION',
-        'WIN',
-        'PALM',
-        'FACE',
-        'VESSEL',
-        'COOK',
-        'DUO',
         'THINKING',
-        'GRENADE',
-        'HAND',
         'FURNITURE',
+        'HAND',
+        'GRENADE',
         'STICKY',
+        'VESSEL',
         'MYTH',
-        'MORSE',
         'SIGNAL',
         'BOARD',
-        'SPIRIT',
-        'SOUL',
+        'JACKET',
+        'LOGICAL',
+        'BED',
+        'COOK',
+        'SITUATION',
+        'PALM',
+        'MORSE',
         'RECORDING',
         'BROWSER',
-        'JACKET',
+        'SPIRIT',
+        'SOUL',
+        'WIN',
+        'DUO',
+        'OR',
+        'FACE',
+        'DEATH',
       ];
-
-      // exactly 10 blue, 10 green, 5 black
       const DEFAULT_COLORS = [
         'blue',
-        'green',
         'blue',
+        'blue',
+        'blue',
+        'blue',
+        'blue',
+        'blue',
+        'blue',
+        'blue',
+        'blue',
+        'green',
+        'green',
+        'green',
+        'green',
+        'green',
+        'green',
+        'green',
+        'green',
+        'green',
+        'green',
         'black',
-        'green',
-        'green',
-        'blue',
-        'blue',
-        'blue',
-        'green',
-        'black',
-        'green',
-        'green',
-        'blue',
-        'blue',
-        'green',
-        'black',
-        'blue',
-        'green',
-        'green',
-        'blue',
         'black',
         'black',
-        'blue',
-        'green',
+        'black',
+        'black',
       ];
 
       let state = {
@@ -429,6 +518,7 @@
         revealed: Array(25).fill(false),
         selectedPlayer: null,
         editMode: false,
+        hint: '',
         timer: { total: 60, remaining: 60, running: false, intervalId: null },
       };
       const COLOR_CYCLE = ['blue', 'green', 'black'];
@@ -543,6 +633,7 @@
       function enterGame() {
         renderTeams();
         renderBoard();
+        renderHint();
         showScreen('gameScreen');
       }
 
@@ -560,25 +651,37 @@
             side === 'left' ? 'teamLeft' : 'teamRight',
           );
           const members = roster.filter((p) => p.side === side);
-          box.innerHTML = members
-            .map(
-              (p) => `
-      <div class="role-line">
-        <span class="role-dot ${p.role}"></span>
-        <span class="pname-edit ${p.id === state.selectedPlayer ? 'active-view' : ''}" data-id="${p.id}" data-path="${p.path}">${p.name}</span>
-      </div>
-    `,
-            )
-            .join('');
+          const spirit = members.filter((p) => p.role === 'spirit');
+          const souls = members.filter((p) => p.role === 'soul');
+          let html = '';
+          if (spirit.length) {
+            html +=
+              `<div class="group"><div class="group-label">SPIRIT</div>` +
+              spirit.map(memberLine).join('') +
+              `</div>`;
+          }
+          if (souls.length) {
+            html +=
+              `<div class="group"><div class="group-label">SOUL${souls.length > 1 ? 'S' : ''}</div>` +
+              souls.map(memberLine).join('') +
+              `</div>`;
+          }
+          box.innerHTML = html;
         });
         applyEditableState();
         attachNameHandlers();
       }
+      function memberLine(p) {
+        return `<div class="role-line">
+    <span class="role-dot ${p.role}"></span>
+    <span class="pname-edit ${p.id === state.selectedPlayer ? 'active-view' : ''}" data-id="${p.id}" data-path="${p.path}">${p.name}</span>
+  </div>`;
+      }
 
       function attachNameHandlers() {
         document.querySelectorAll('.pname-edit').forEach((el) => {
-          el.onclick = (e) => {
-            if (state.editMode) return; // contenteditable handles it
+          el.onclick = () => {
+            if (state.editMode) return;
             state.selectedPlayer = el.dataset.id;
             renderTeams();
             renderBoard();
@@ -646,7 +749,7 @@
 
           cell.onclick = (e) => {
             if (state.editMode) {
-              if (e.target === wordSpan) return; // editing text, don't cycle color
+              if (e.target === wordSpan) return;
               const cur = state.colors[i];
               const next =
                 COLOR_CYCLE[
@@ -673,11 +776,56 @@
         timerBox.contentEditable = state.editMode ? 'true' : 'false';
       }
 
-      // ---- Timer ----
+      // ---- Hint bar ----
+      const hintDisplay = document.getElementById('hintDisplay');
+      const hintInput = document.getElementById('hintInput');
+      function renderHint() {
+        hintDisplay.textContent = state.hint;
+      }
+      hintDisplay.addEventListener('input', () => {
+        state.hint = hintDisplay.textContent;
+      });
+      hintDisplay.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          hintDisplay.blur();
+        }
+      });
+
+      function sendHint() {
+        const val = hintInput.value.trim();
+        if (!val) return;
+        state.hint = val;
+        hintDisplay.textContent = state.hint;
+        hintInput.value = '';
+      }
+      document.getElementById('hintSend').addEventListener('click', sendHint);
+      hintInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          sendHint();
+        }
+      });
+
+      // ---- Timer (mm:ss) ----
       const timerBox = document.getElementById('timerBox');
+      function formatTime(sec) {
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+      }
+      function parseTime(str) {
+        const cleaned = str.trim();
+        if (cleaned.includes(':')) {
+          const [m, s] = cleaned.split(':').map((n) => parseInt(n) || 0);
+          return m * 60 + s;
+        }
+        const n = parseInt(cleaned.replace(/\D/g, ''));
+        return isNaN(n) ? state.timer.total : n;
+      }
       function updateTimerBox() {
         if (document.activeElement !== timerBox) {
-          timerBox.textContent = state.timer.remaining;
+          timerBox.textContent = formatTime(state.timer.remaining);
         }
         timerBox.classList.toggle(
           'low',
@@ -705,14 +853,12 @@
         updateTimerBox();
       }
       timerBox.addEventListener('click', () => {
-        if (state.editMode) return; // contenteditable handles focus/edit
+        if (state.editMode) return;
         if (state.timer.running) pauseTimer();
         else startTimer();
       });
       timerBox.addEventListener('blur', () => {
-        const v =
-          parseInt(timerBox.textContent.replace(/\D/g, '')) ||
-          state.timer.total;
+        const v = parseTime(timerBox.textContent);
         state.timer.total = v;
         if (!state.timer.running) state.timer.remaining = v;
         updateTimerBox();
@@ -722,9 +868,6 @@
           e.preventDefault();
           timerBox.blur();
         }
-      });
-      timerBox.addEventListener('input', () => {
-        timerBox.textContent = timerBox.textContent.replace(/\D/g, '');
       });
 
       // ---- Edit mode toggle ----
