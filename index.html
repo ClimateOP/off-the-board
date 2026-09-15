@@ -189,10 +189,12 @@
         padding-bottom: 6px;
         border-bottom: 1px solid var(--line);
       }
+      .team-panel.right .group-label {
+        text-align: right;
+      }
       .role-line {
         display: flex;
         align-items: center;
-        gap: 9px;
         margin-bottom: 5px;
       }
       .role-line:last-child {
@@ -200,18 +202,6 @@
       }
       .team-panel.right .role-line {
         justify-content: flex-end;
-      }
-      .role-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        flex: none;
-      }
-      .role-dot.spirit {
-        background: var(--blue);
-      }
-      .role-dot.soul {
-        background: var(--ink-dim);
       }
       .pname-edit {
         font-size: 16px;
@@ -228,6 +218,12 @@
         background: var(--panel-2);
         border: 1px solid var(--line);
         cursor: text;
+      }
+      .pname-edit[contenteditable='true']:empty::before {
+        content: 'click to name';
+        color: var(--ink-dim);
+        font-style: italic;
+        font-weight: 400;
       }
 
       .timer-box {
@@ -460,7 +456,7 @@
       // Words + colors taken from the script: black words are the 5 confirmed
       // off-the-board words Beta reads out ("WIN" "DUO" "OR" "FACE" "DEATH").
       // Positions are scattered across the 5x5 grid rather than grouped by color.
-      const DEFAULT_WORDS = [
+      const TEAM_WORDS = [
         'THINKING',
         'WIN',
         'FURNITURE',
@@ -487,7 +483,7 @@
         'SPIRIT',
         'SOUL',
       ];
-      const DEFAULT_COLORS = [
+      const TEAM_COLORS = [
         'blue',
         'black',
         'blue',
@@ -515,6 +511,71 @@
         'green',
       ];
 
+      // Duo mode is a different game in the script (round 2) — only one
+      // off-the-board word: VESSEL. Word set kept distinct from Team mode.
+      const DUO_WORDS = [
+        'GRENADE',
+        'GHOST',
+        'CANDLE',
+        'MIRROR',
+        'ATTIC',
+        'BASEMENT',
+        'WHISPER',
+        'SHADOW',
+        'CURSE',
+        'RITUAL',
+        'CLOCK',
+        'DOOR',
+        'VESSEL',
+        'WINDOW',
+        'KEY',
+        'LOCK',
+        'STAIRS',
+        'HALLWAY',
+        'FLASHLIGHT',
+        'STATIC',
+        'ECHO',
+        'SILENCE',
+        'ALONE',
+        'TRAPPED',
+        'COOKING',
+      ];
+      const DUO_COLORS = [
+        'blue',
+        'green',
+        'blue',
+        'green',
+        'blue',
+        'green',
+        'blue',
+        'green',
+        'blue',
+        'green',
+        'blue',
+        'green',
+        'black',
+        'blue',
+        'green',
+        'blue',
+        'green',
+        'blue',
+        'green',
+        'blue',
+        'green',
+        'blue',
+        'green',
+        'blue',
+        'green',
+      ];
+
+      function freshBoardState(words, colors) {
+        return {
+          words: words.slice(),
+          colors: colors.slice(),
+          revealed: Array(25).fill(false),
+        };
+      }
+
       let state = {
         mode: 'team',
         names: {
@@ -524,15 +585,19 @@
             t2: { spirit: 'Beta', soul1: 'Epsilon', soul2: 'Gamma' },
           },
         },
-        words: DEFAULT_WORDS.slice(),
-        colors: DEFAULT_COLORS.slice(),
-        revealed: Array(25).fill(false),
+        board: {
+          duo: freshBoardState(DUO_WORDS, DUO_COLORS),
+          team: freshBoardState(TEAM_WORDS, TEAM_COLORS),
+        },
         selectedPlayer: null,
         editMode: false,
         hint: '',
         timer: { total: 60, remaining: 60, running: false, intervalId: null },
       };
       const COLOR_CYCLE = ['blue', 'green', 'black'];
+      function currentBoard() {
+        return state.board[state.mode];
+      }
 
       function getRoster() {
         if (state.mode === 'duo') {
@@ -664,17 +729,24 @@
           const members = roster.filter((p) => p.side === side);
           const spirit = members.filter((p) => p.role === 'spirit');
           const souls = members.filter((p) => p.role === 'soul');
+          // In viewer mode, players with an emptied name are hidden entirely.
+          const visSpirit = state.editMode
+            ? spirit
+            : spirit.filter((p) => p.name.trim() !== '');
+          const visSouls = state.editMode
+            ? souls
+            : souls.filter((p) => p.name.trim() !== '');
           let html = '';
-          if (spirit.length) {
+          if (visSpirit.length) {
             html +=
               `<div class="group"><div class="group-label">SPIRIT</div>` +
-              spirit.map(memberLine).join('') +
+              visSpirit.map(memberLine).join('') +
               `</div>`;
           }
-          if (souls.length) {
+          if (visSouls.length) {
             html +=
-              `<div class="group"><div class="group-label">SOUL${souls.length > 1 ? 'S' : ''}</div>` +
-              souls.map(memberLine).join('') +
+              `<div class="group"><div class="group-label">SOUL${visSouls.length > 1 ? 'S' : ''}</div>` +
+              visSouls.map(memberLine).join('') +
               `</div>`;
           }
           box.innerHTML = html;
@@ -684,7 +756,6 @@
       }
       function memberLine(p) {
         return `<div class="role-line">
-    <span class="role-dot ${p.role}"></span>
     <span class="pname-edit ${p.id === state.selectedPlayer ? 'active-view' : ''}" data-id="${p.id}" data-path="${p.path}">${p.name}</span>
   </div>`;
       }
@@ -701,8 +772,9 @@
             setPath(el.dataset.path, el.textContent);
           };
           el.onblur = () => {
-            if (el.textContent.trim() === '') el.textContent = 'Unnamed';
             setPath(el.dataset.path, el.textContent);
+            renderTeams();
+            renderBoard();
           };
           el.onkeydown = (e) => {
             if (e.key === 'Enter') {
@@ -714,6 +786,7 @@
       }
 
       function renderBoard() {
+        const cb = currentBoard();
         const roster = getRoster();
         const player =
           roster.find((p) => p.id === state.selectedPlayer) || roster[0];
@@ -722,17 +795,17 @@
         board.innerHTML = '';
         for (let i = 0; i < 25; i++) {
           const cell = document.createElement('div');
-          const isRevealed = state.revealed[i];
+          const isRevealed = cb.revealed[i];
           let cls = '';
           if (isSpirit || isRevealed || state.editMode) {
-            cls = state.colors[i];
+            cls = cb.colors[i];
           }
           cell.className = 'cell ' + cls;
           cell.dataset.i = i;
 
           const wordSpan = document.createElement('span');
           wordSpan.className = 'cell-word';
-          wordSpan.textContent = state.words[i];
+          wordSpan.textContent = cb.words[i];
           wordSpan.dataset.i = i;
           cell.appendChild(wordSpan);
           board.appendChild(cell);
@@ -743,13 +816,13 @@
             }
           };
           wordSpan.oninput = () => {
-            state.words[i] = wordSpan.textContent.toUpperCase();
+            cb.words[i] = wordSpan.textContent.toUpperCase();
           };
           wordSpan.onblur = () => {
             if (wordSpan.textContent.trim() === '') {
               wordSpan.textContent = 'WORD';
             }
-            state.words[i] = wordSpan.textContent.toUpperCase();
+            cb.words[i] = wordSpan.textContent.toUpperCase();
           };
           wordSpan.onkeydown = (e) => {
             if (e.key === 'Enter') {
@@ -761,15 +834,15 @@
           cell.onclick = (e) => {
             if (state.editMode) {
               if (e.target === wordSpan) return;
-              const cur = state.colors[i];
+              const cur = cb.colors[i];
               const next =
                 COLOR_CYCLE[
                   (COLOR_CYCLE.indexOf(cur) + 1) % COLOR_CYCLE.length
                 ];
-              state.colors[i] = next;
+              cb.colors[i] = next;
               renderBoard();
             } else {
-              state.revealed[i] = !state.revealed[i];
+              cb.revealed[i] = !cb.revealed[i];
               renderBoard();
             }
           };
