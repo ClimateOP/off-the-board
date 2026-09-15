@@ -168,25 +168,35 @@
         width: 270px;
         display: flex;
         flex-direction: column;
-        gap: 14px;
+        gap: 10px;
       }
       .team-panel.right {
         align-items: flex-end;
+      }
+      .group {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px 16px;
+        width: 100%;
       }
       .group-label {
         font-family: 'IBM Plex Mono', monospace;
         font-size: 10px;
         letter-spacing: 0.14em;
         color: var(--ink-dim);
-        margin-bottom: 6px;
-      }
-      .group {
+        margin-bottom: 7px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid var(--line);
       }
       .role-line {
         display: flex;
         align-items: center;
         gap: 9px;
         margin-bottom: 5px;
+      }
+      .role-line:last-child {
+        margin-bottom: 0;
       }
       .team-panel.right .role-line {
         justify-content: flex-end;
@@ -319,12 +329,16 @@
         border-color: #3a1616;
         box-shadow: 0 0 16px rgba(194, 59, 59, 0.18) inset;
       }
+      .cell {
+        cursor: pointer;
+      }
       .cell-word {
         font-size: 24px;
         font-weight: 600;
         letter-spacing: 0.01em;
         outline: none;
         width: 100%;
+        cursor: pointer;
       }
       .cell-word[contenteditable='true'] {
         cursor: text;
@@ -335,53 +349,53 @@
         margin-top: 16px;
         display: flex;
         align-items: center;
-        gap: 20px;
+        justify-content: center;
         background: var(--panel);
         border: 1px solid var(--line);
         border-radius: 6px;
         padding: 14px 22px;
+        min-height: 60px;
       }
       .hint-label {
         font-family: 'IBM Plex Mono', monospace;
         font-size: 10px;
         letter-spacing: 0.14em;
         color: var(--ink-dim);
+        margin-right: 18px;
         flex: none;
       }
-      .hint-display {
-        flex: 1;
-        font-size: 26px;
+      .hint-word {
+        font-size: 24px;
         font-weight: 600;
-        font-family: 'Cinzel', serif;
+        font-family: 'IBM Plex Sans', sans-serif;
         color: var(--ink);
-        outline: none;
-        min-height: 34px;
-        cursor: text;
-        border-radius: 3px;
-        padding: 2px 8px;
+        cursor: pointer;
+        padding: 4px 14px;
+        border-radius: 4px;
+        letter-spacing: 0.02em;
       }
-      .hint-display:empty::before {
-        content: '—';
+      .hint-word:hover {
+        background: var(--panel-2);
+      }
+      .hint-word.empty {
         color: var(--ink-dim);
+        font-weight: 500;
       }
       .hint-input-row {
         display: flex;
         align-items: center;
         gap: 8px;
-        flex: none;
       }
       .hint-input-row input {
         background: var(--void);
-        border: 1px solid var(--line);
+        border: 1px solid var(--blue);
         color: var(--ink);
         padding: 9px 12px;
         border-radius: 4px;
-        font-size: 14px;
-        width: 220px;
+        font-size: 16px;
+        font-family: 'IBM Plex Sans', sans-serif;
+        width: 280px;
         outline: none;
-      }
-      .hint-input-row input:focus {
-        border-color: var(--blue);
       }
       .hint-send {
         background: var(--blue);
@@ -436,11 +450,7 @@
       <div class="board" id="board"></div>
       <div class="hint-bar">
         <div class="hint-label">HINT</div>
-        <div class="hint-display" id="hintDisplay" contenteditable="true"></div>
-        <div class="hint-input-row">
-          <input type="text" id="hintInput" placeholder="Type hint…" />
-          <button class="hint-send" id="hintSend">&#10148;</button>
-        </div>
+        <div id="hintZone"></div>
       </div>
       <div class="edit-pill" id="editPill">EDIT MODE</div>
       <div class="dots" id="dotsMenu">&#8942;</div>
@@ -449,59 +459,60 @@
     <script>
       // Words + colors taken from the script: black words are the 5 confirmed
       // off-the-board words Beta reads out ("WIN" "DUO" "OR" "FACE" "DEATH").
+      // Positions are scattered across the 5x5 grid rather than grouped by color.
       const DEFAULT_WORDS = [
         'THINKING',
+        'WIN',
         'FURNITURE',
-        'HAND',
-        'GRENADE',
-        'STICKY',
-        'VESSEL',
-        'MYTH',
-        'SIGNAL',
-        'BOARD',
-        'JACKET',
         'LOGICAL',
+        'DUO',
+        'HAND',
         'BED',
+        'GRENADE',
+        'OR',
         'COOK',
+        'STICKY',
+        'FACE',
         'SITUATION',
+        'VESSEL',
         'PALM',
+        'DEATH',
+        'MYTH',
         'MORSE',
+        'SIGNAL',
         'RECORDING',
+        'BOARD',
         'BROWSER',
+        'JACKET',
         'SPIRIT',
         'SOUL',
-        'WIN',
-        'DUO',
-        'OR',
-        'FACE',
-        'DEATH',
       ];
       const DEFAULT_COLORS = [
         'blue',
+        'black',
         'blue',
-        'blue',
-        'blue',
-        'blue',
-        'blue',
-        'blue',
-        'blue',
-        'blue',
-        'blue',
-        'green',
-        'green',
-        'green',
-        'green',
-        'green',
-        'green',
-        'green',
-        'green',
-        'green',
         'green',
         'black',
+        'blue',
+        'green',
+        'blue',
         'black',
+        'green',
+        'blue',
         'black',
+        'green',
+        'blue',
+        'green',
         'black',
-        'black',
+        'blue',
+        'green',
+        'blue',
+        'green',
+        'blue',
+        'green',
+        'blue',
+        'green',
+        'green',
       ];
 
       let state = {
@@ -776,36 +787,47 @@
         timerBox.contentEditable = state.editMode ? 'true' : 'false';
       }
 
-      // ---- Hint bar ----
-      const hintDisplay = document.getElementById('hintDisplay');
-      const hintInput = document.getElementById('hintInput');
-      function renderHint() {
-        hintDisplay.textContent = state.hint;
-      }
-      hintDisplay.addEventListener('input', () => {
-        state.hint = hintDisplay.textContent;
-      });
-      hintDisplay.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          hintDisplay.blur();
-        }
-      });
+      // ---- Hint bar: single zone that toggles between "type + enter" and "display word" ----
+      const hintZone = document.getElementById('hintZone');
+      let hintEditing = false;
 
-      function sendHint() {
-        const val = hintInput.value.trim();
-        if (!val) return;
-        state.hint = val;
-        hintDisplay.textContent = state.hint;
-        hintInput.value = '';
-      }
-      document.getElementById('hintSend').addEventListener('click', sendHint);
-      hintInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          sendHint();
+      function renderHint() {
+        hintZone.innerHTML = '';
+        if (hintEditing || !state.hint) {
+          const row = document.createElement('div');
+          row.className = 'hint-input-row';
+          row.innerHTML = `<input type="text" id="hintInput" placeholder="Type hint…"><button class="hint-send" id="hintSend">&#10148;</button>`;
+          hintZone.appendChild(row);
+          const input = row.querySelector('#hintInput');
+          input.value = state.hint || '';
+          input.focus();
+          input.select();
+          function commit() {
+            const val = input.value.trim();
+            if (val) {
+              state.hint = val;
+              hintEditing = false;
+              renderHint();
+            }
+          }
+          row.querySelector('#hintSend').addEventListener('click', commit);
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              commit();
+            }
+          });
+        } else {
+          const word = document.createElement('div');
+          word.className = 'hint-word';
+          word.textContent = state.hint;
+          word.addEventListener('click', () => {
+            hintEditing = true;
+            renderHint();
+          });
+          hintZone.appendChild(word);
         }
-      });
+      }
 
       // ---- Timer (mm:ss) ----
       const timerBox = document.getElementById('timerBox');
