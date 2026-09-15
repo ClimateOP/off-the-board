@@ -153,33 +153,59 @@
       #gameScreen {
         align-items: stretch;
         justify-content: flex-start;
-        padding: 28px 40px;
+        padding: 26px 40px;
         position: relative;
       }
+
       .game-top {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: flex-start;
+        gap: 60px;
         margin-bottom: 22px;
       }
-      .names-block {
+      .team-panel {
+        width: 260px;
+      }
+      .team-panel.right {
+        text-align: right;
+      }
+      .team-panel .role-line {
         display: flex;
-        gap: 28px;
-        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
       }
-      .name-chip {
-        font-size: 15px;
-        color: var(--ink-dim);
-        font-family: 'IBM Plex Mono', monospace;
+      .team-panel.right .role-line {
+        justify-content: flex-end;
       }
-      .name-chip b {
-        color: var(--ink);
-        font-family: 'IBM Plex Sans', sans-serif;
-        font-size: 16px;
+      .role-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex: none;
+      }
+      .role-dot.spirit {
+        background: var(--blue);
+      }
+      .role-dot.soul {
+        background: var(--ink-dim);
+      }
+      .pname-edit {
+        font-size: 17px;
         font-weight: 600;
+        outline: none;
+        border-radius: 3px;
+        padding: 2px 6px;
+        cursor: pointer;
       }
-      .name-chip.me b {
+      .pname-edit.active-view {
         color: var(--blue);
+      }
+      .pname-edit[contenteditable='true'] {
+        background: var(--panel-2);
+        border: 1px solid var(--line);
+        cursor: text;
       }
 
       .timer-box {
@@ -193,6 +219,8 @@
         background: var(--panel);
         min-width: 110px;
         text-align: center;
+        outline: none;
+        align-self: center;
       }
       .timer-box.paused {
         color: var(--ink-dim);
@@ -201,6 +229,10 @@
       .timer-box.low {
         color: var(--black-word);
         border-color: var(--black-word);
+      }
+      .timer-box[contenteditable='true'] {
+        border-color: var(--blue);
+        color: var(--ink);
       }
 
       .dots {
@@ -217,6 +249,26 @@
       .dots:hover {
         color: var(--ink);
       }
+      .dots.on {
+        color: var(--blue);
+      }
+
+      .edit-pill {
+        position: absolute;
+        top: 30px;
+        right: 78px;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        color: var(--blue);
+        border: 1px solid var(--blue);
+        padding: 3px 8px;
+        border-radius: 10px;
+        display: none;
+      }
+      .edit-pill.on {
+        display: block;
+      }
 
       .board {
         flex: 1;
@@ -224,7 +276,7 @@
         grid-template-columns: repeat(5, 1fr);
         grid-template-rows: repeat(5, 1fr);
         gap: 12px;
-        height: calc(100vh - 190px);
+        height: calc(100vh - 200px);
       }
       .cell {
         border-radius: 5px;
@@ -233,14 +285,9 @@
         justify-content: center;
         text-align: center;
         padding: 8px;
-        font-size: 26px;
-        font-weight: 600;
-        cursor: pointer;
-        user-select: none;
         border: 1px solid var(--line);
         background: var(--panel-2);
         color: var(--ink);
-        letter-spacing: 0.01em;
       }
       .cell.blue {
         background: linear-gradient(160deg, var(--blue), #2a5c8f);
@@ -258,153 +305,18 @@
         border-color: #3a1616;
         box-shadow: 0 0 16px rgba(194, 59, 59, 0.18) inset;
       }
-
-      /* EDIT MODAL */
-      #editOverlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(5, 6, 10, 0.88);
-        z-index: 50;
-        overflow-y: auto;
-        padding: 40px;
-      }
-      #editOverlay.active {
-        display: block;
-      }
-      .edit-panel {
-        max-width: 900px;
-        margin: 0 auto;
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: 6px;
-        padding: 28px 32px 36px;
-      }
-      .edit-panel h2 {
-        font-family: 'Cinzel', serif;
-        font-size: 20px;
-        margin: 0 0 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .edit-close {
-        font-size: 22px;
-        color: var(--ink-dim);
-        cursor: pointer;
-      }
-      .edit-close:hover {
-        color: var(--ink);
-      }
-      .edit-section {
-        margin-bottom: 26px;
-      }
-      .edit-section h3 {
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: var(--ink-dim);
-        margin: 0 0 12px;
-        font-family: 'IBM Plex Mono', monospace;
-      }
-      .edit-grid-names {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
-      .edit-field label {
-        display: block;
-        font-size: 11px;
-        color: var(--ink-dim);
-        margin-bottom: 4px;
-      }
-      input[type='text'],
-      input[type='number'] {
-        width: 100%;
-        background: var(--void);
-        border: 1px solid var(--line);
-        color: var(--ink);
-        padding: 8px 10px;
-        border-radius: 3px;
-        font-size: 13px;
-      }
-      input[type='text']:focus,
-      input[type='number']:focus {
+      .cell-word {
+        font-size: 26px;
+        font-weight: 600;
+        letter-spacing: 0.01em;
         outline: none;
-        border-color: var(--blue);
+        width: 100%;
       }
-
-      .setup-grid {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 8px;
+      .cell-word[contenteditable='true'] {
+        cursor: text;
       }
-      .setup-cell input {
-        font-size: 11px;
-        text-align: center;
-        padding: 6px 4px;
-      }
-      .swatches {
-        display: flex;
-        justify-content: center;
-        gap: 3px;
-        margin-top: 4px;
-      }
-      .sw {
-        width: 15px;
-        height: 15px;
-        border-radius: 2px;
+      .cell:not(.editing) {
         cursor: pointer;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-      }
-      .sw.blue {
-        background: var(--blue);
-      }
-      .sw.green {
-        background: var(--green);
-      }
-      .sw.black {
-        background: #3a1616;
-      }
-      .sw.neutral {
-        background: var(--panel-2);
-      }
-      .sw.active {
-        outline: 2px solid var(--ink);
-        outline-offset: 1px;
-      }
-      .counts {
-        display: flex;
-        gap: 14px;
-        font-size: 11px;
-        color: var(--ink-dim);
-        margin-bottom: 10px;
-        font-family: 'IBM Plex Mono', monospace;
-      }
-      .counts b {
-        color: var(--ink);
-      }
-
-      .edit-row-btns {
-        display: flex;
-        gap: 10px;
-        margin-top: 6px;
-      }
-      button.btn {
-        background: var(--panel-2);
-        border: 1px solid var(--line);
-        color: var(--ink);
-        padding: 9px 16px;
-        border-radius: 3px;
-        font-size: 12.5px;
-        cursor: pointer;
-        font-family: 'IBM Plex Mono', monospace;
-      }
-      button.btn:hover {
-        border-color: var(--blue);
-      }
-      button.btn.danger:hover {
-        border-color: var(--black-word);
       }
     </style>
   </head>
@@ -436,48 +348,13 @@
     <!-- GAME SCREEN -->
     <div class="screen" id="gameScreen">
       <div class="game-top">
-        <div class="names-block" id="namesBlock"></div>
+        <div class="team-panel left" id="teamLeft"></div>
         <div class="timer-box" id="timerBox">60</div>
+        <div class="team-panel right" id="teamRight"></div>
       </div>
       <div class="board" id="board"></div>
+      <div class="edit-pill" id="editPill">EDIT MODE</div>
       <div class="dots" id="dotsMenu">&#8942;</div>
-    </div>
-
-    <!-- EDIT OVERLAY -->
-    <div id="editOverlay">
-      <div class="edit-panel">
-        <h2>Edit <span class="edit-close" id="editClose">&times;</span></h2>
-
-        <div class="edit-section" id="namesEditSection">
-          <h3>Player Names</h3>
-          <div class="edit-grid-names" id="namesEditGrid"></div>
-        </div>
-
-        <div class="edit-section">
-          <h3>Board — words &amp; true colors</h3>
-          <div class="counts" id="countsBar"></div>
-          <div class="setup-grid" id="setupGrid"></div>
-        </div>
-
-        <div class="edit-section">
-          <h3>Timer duration (seconds)</h3>
-          <input
-            type="number"
-            id="timerDurationInput"
-            style="max-width: 140px"
-            min="5"
-          />
-        </div>
-
-        <div class="edit-row-btns">
-          <button class="btn" id="backToPlayerSelect">
-            Change player / mode
-          </button>
-          <button class="btn danger" id="clearReveals">
-            Clear revealed cells
-          </button>
-        </div>
-      </div>
     </div>
 
     <script>
@@ -509,7 +386,7 @@
         'JACKET',
       ];
 
-      // fixed, deterministic default layout (not randomized) so retakes stay consistent
+      // exactly 10 blue, 10 green, 5 black
       const DEFAULT_COLORS = [
         'blue',
         'green',
@@ -518,21 +395,21 @@
         'green',
         'green',
         'blue',
-        'neutral',
+        'blue',
         'blue',
         'green',
         'black',
-        'neutral',
+        'green',
         'green',
         'blue',
-        'neutral',
+        'blue',
         'green',
         'black',
         'blue',
-        'neutral',
+        'green',
         'green',
         'blue',
-        'neutral',
+        'black',
         'black',
         'blue',
         'green',
@@ -551,14 +428,28 @@
         colors: DEFAULT_COLORS.slice(),
         revealed: Array(25).fill(false),
         selectedPlayer: null,
+        editMode: false,
         timer: { total: 60, remaining: 60, running: false, intervalId: null },
       };
+      const COLOR_CYCLE = ['blue', 'green', 'black'];
 
       function getRoster() {
         if (state.mode === 'duo') {
           return [
-            { id: 'p1', name: state.names.duo.p1, role: 'spirit', team: 'A' },
-            { id: 'p2', name: state.names.duo.p2, role: 'soul', team: 'A' },
+            {
+              id: 'p1',
+              name: state.names.duo.p1,
+              role: 'spirit',
+              side: 'left',
+              path: 'duo.p1',
+            },
+            {
+              id: 'p2',
+              name: state.names.duo.p2,
+              role: 'soul',
+              side: 'right',
+              path: 'duo.p2',
+            },
           ];
         }
         return [
@@ -566,37 +457,43 @@
             id: 't1-spirit',
             name: state.names.team.t1.spirit,
             role: 'spirit',
-            team: '1',
+            side: 'left',
+            path: 'team.t1.spirit',
           },
           {
             id: 't1-soul1',
             name: state.names.team.t1.soul1,
             role: 'soul',
-            team: '1',
+            side: 'left',
+            path: 'team.t1.soul1',
           },
           {
             id: 't1-soul2',
             name: state.names.team.t1.soul2,
             role: 'soul',
-            team: '1',
+            side: 'left',
+            path: 'team.t1.soul2',
           },
           {
             id: 't2-spirit',
             name: state.names.team.t2.spirit,
             role: 'spirit',
-            team: '2',
+            side: 'right',
+            path: 'team.t2.spirit',
           },
           {
             id: 't2-soul1',
             name: state.names.team.t2.soul1,
             role: 'soul',
-            team: '2',
+            side: 'right',
+            path: 'team.t2.soul1',
           },
           {
             id: 't2-soul2',
             name: state.names.team.t2.soul2,
             role: 'soul',
-            team: '2',
+            side: 'right',
+            path: 'team.t2.soul2',
           },
         ];
       }
@@ -641,31 +538,65 @@
       document
         .getElementById('backToMode')
         .addEventListener('click', () => showScreen('modeScreen'));
-      document
-        .getElementById('backToPlayerSelect')
-        .addEventListener('click', () => {
-          closeEdit();
-          renderPlayerList();
-          showScreen('playerScreen');
-        });
 
       // ---- Game screen ----
       function enterGame() {
-        renderNames();
+        renderTeams();
         renderBoard();
         showScreen('gameScreen');
       }
 
-      function renderNames() {
+      function setPath(pathStr, value) {
+        const path = pathStr.split('.');
+        let ref = state.names;
+        for (let i = 0; i < path.length - 1; i++) ref = ref[path[i]];
+        ref[path[path.length - 1]] = value;
+      }
+
+      function renderTeams() {
         const roster = getRoster();
-        const me = roster.find((p) => p.id === state.selectedPlayer);
-        document.getElementById('namesBlock').innerHTML = roster
-          .map(
-            (p) => `
-    <span class="name-chip ${p.id === me.id ? 'me' : ''}"><b>${p.name}</b></span>
-  `,
-          )
-          .join('');
+        ['left', 'right'].forEach((side) => {
+          const box = document.getElementById(
+            side === 'left' ? 'teamLeft' : 'teamRight',
+          );
+          const members = roster.filter((p) => p.side === side);
+          box.innerHTML = members
+            .map(
+              (p) => `
+      <div class="role-line">
+        <span class="role-dot ${p.role}"></span>
+        <span class="pname-edit ${p.id === state.selectedPlayer ? 'active-view' : ''}" data-id="${p.id}" data-path="${p.path}">${p.name}</span>
+      </div>
+    `,
+            )
+            .join('');
+        });
+        applyEditableState();
+        attachNameHandlers();
+      }
+
+      function attachNameHandlers() {
+        document.querySelectorAll('.pname-edit').forEach((el) => {
+          el.onclick = (e) => {
+            if (state.editMode) return; // contenteditable handles it
+            state.selectedPlayer = el.dataset.id;
+            renderTeams();
+            renderBoard();
+          };
+          el.oninput = () => {
+            setPath(el.dataset.path, el.textContent);
+          };
+          el.onblur = () => {
+            if (el.textContent.trim() === '') el.textContent = 'Unnamed';
+            setPath(el.dataset.path, el.textContent);
+          };
+          el.onkeydown = (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              el.blur();
+            }
+          };
+        });
       }
 
       function renderBoard() {
@@ -679,23 +610,75 @@
           const cell = document.createElement('div');
           const isRevealed = state.revealed[i];
           let cls = '';
-          if (isSpirit || isRevealed) {
-            cls = state.colors[i] === 'neutral' ? '' : state.colors[i];
+          if (isSpirit || isRevealed || state.editMode) {
+            cls = state.colors[i];
           }
           cell.className = 'cell ' + cls;
-          cell.textContent = state.words[i];
-          cell.addEventListener('click', () => {
-            state.revealed[i] = !state.revealed[i];
-            renderBoard();
-          });
+          cell.dataset.i = i;
+
+          const wordSpan = document.createElement('span');
+          wordSpan.className = 'cell-word';
+          wordSpan.textContent = state.words[i];
+          wordSpan.dataset.i = i;
+          cell.appendChild(wordSpan);
           board.appendChild(cell);
+
+          wordSpan.onclick = (e) => {
+            if (state.editMode) {
+              e.stopPropagation();
+            }
+          };
+          wordSpan.oninput = () => {
+            state.words[i] = wordSpan.textContent.toUpperCase();
+          };
+          wordSpan.onblur = () => {
+            if (wordSpan.textContent.trim() === '') {
+              wordSpan.textContent = 'WORD';
+            }
+            state.words[i] = wordSpan.textContent.toUpperCase();
+          };
+          wordSpan.onkeydown = (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              wordSpan.blur();
+            }
+          };
+
+          cell.onclick = (e) => {
+            if (state.editMode) {
+              if (e.target === wordSpan) return; // editing text, don't cycle color
+              const cur = state.colors[i];
+              const next =
+                COLOR_CYCLE[
+                  (COLOR_CYCLE.indexOf(cur) + 1) % COLOR_CYCLE.length
+                ];
+              state.colors[i] = next;
+              renderBoard();
+            } else {
+              state.revealed[i] = !state.revealed[i];
+              renderBoard();
+            }
+          };
         }
+        applyEditableState();
       }
 
-      // ---- Timer: click to pause/resume, loops on reaching zero ----
+      function applyEditableState() {
+        document.querySelectorAll('.pname-edit').forEach((el) => {
+          el.contentEditable = state.editMode ? 'true' : 'false';
+        });
+        document.querySelectorAll('.cell-word').forEach((el) => {
+          el.contentEditable = state.editMode ? 'true' : 'false';
+        });
+        timerBox.contentEditable = state.editMode ? 'true' : 'false';
+      }
+
+      // ---- Timer ----
       const timerBox = document.getElementById('timerBox');
       function updateTimerBox() {
-        timerBox.textContent = state.timer.remaining;
+        if (document.activeElement !== timerBox) {
+          timerBox.textContent = state.timer.remaining;
+        }
         timerBox.classList.toggle(
           'low',
           state.timer.remaining <= 10 && state.timer.running,
@@ -706,7 +689,7 @@
         if (state.timer.remaining > 0) {
           state.timer.remaining -= 1;
         } else {
-          state.timer.remaining = state.timer.total; // loop, never hard-stops
+          state.timer.remaining = state.timer.total;
         }
         updateTimerBox();
       }
@@ -722,106 +705,38 @@
         updateTimerBox();
       }
       timerBox.addEventListener('click', () => {
+        if (state.editMode) return; // contenteditable handles focus/edit
         if (state.timer.running) pauseTimer();
         else startTimer();
       });
+      timerBox.addEventListener('blur', () => {
+        const v =
+          parseInt(timerBox.textContent.replace(/\D/g, '')) ||
+          state.timer.total;
+        state.timer.total = v;
+        if (!state.timer.running) state.timer.remaining = v;
+        updateTimerBox();
+      });
+      timerBox.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          timerBox.blur();
+        }
+      });
+      timerBox.addEventListener('input', () => {
+        timerBox.textContent = timerBox.textContent.replace(/\D/g, '');
+      });
 
-      // ---- Edit overlay ----
-      const editOverlay = document.getElementById('editOverlay');
-      document.getElementById('dotsMenu').addEventListener('click', openEdit);
-      document.getElementById('editClose').addEventListener('click', closeEdit);
-      function openEdit() {
-        pauseTimer();
-        renderNamesEdit();
-        renderSetupGrid();
-        document.getElementById('timerDurationInput').value = state.timer.total;
-        editOverlay.classList.add('active');
-      }
-      function closeEdit() {
-        editOverlay.classList.remove('active');
-        renderNames();
+      // ---- Edit mode toggle ----
+      const dotsMenu = document.getElementById('dotsMenu');
+      const editPill = document.getElementById('editPill');
+      dotsMenu.addEventListener('click', () => {
+        state.editMode = !state.editMode;
+        dotsMenu.classList.toggle('on', state.editMode);
+        editPill.classList.toggle('on', state.editMode);
+        if (state.editMode) pauseTimer();
+        renderTeams();
         renderBoard();
-      }
-
-      function renderNamesEdit() {
-        const box = document.getElementById('namesEditGrid');
-        if (state.mode === 'duo') {
-          box.innerHTML = `
-      <div class="edit-field"><label>Player 1 (Spirit)</label><input type="text" data-path="duo.p1" value="${state.names.duo.p1}"></div>
-      <div class="edit-field"><label>Player 2 (Soul)</label><input type="text" data-path="duo.p2" value="${state.names.duo.p2}"></div>
-    `;
-        } else {
-          box.innerHTML = `
-      <div class="edit-field"><label>Team 1 — Spirit</label><input type="text" data-path="team.t1.spirit" value="${state.names.team.t1.spirit}"></div>
-      <div class="edit-field"><label>Team 1 — Soul</label><input type="text" data-path="team.t1.soul1" value="${state.names.team.t1.soul1}"></div>
-      <div class="edit-field"><label>Team 1 — Soul</label><input type="text" data-path="team.t1.soul2" value="${state.names.team.t1.soul2}"></div>
-      <div class="edit-field"><label>Team 2 — Spirit</label><input type="text" data-path="team.t2.spirit" value="${state.names.team.t2.spirit}"></div>
-      <div class="edit-field"><label>Team 2 — Soul</label><input type="text" data-path="team.t2.soul1" value="${state.names.team.t2.soul1}"></div>
-      <div class="edit-field"><label>Team 2 — Soul</label><input type="text" data-path="team.t2.soul2" value="${state.names.team.t2.soul2}"></div>
-    `;
-        }
-        box.querySelectorAll('input').forEach((inp) => {
-          inp.addEventListener('input', (e) => {
-            const path = e.target.dataset.path.split('.');
-            let ref = state.names;
-            for (let i = 0; i < path.length - 1; i++) ref = ref[path[i]];
-            ref[path[path.length - 1]] = e.target.value;
-          });
-        });
-      }
-
-      function renderCounts() {
-        const c = { blue: 0, green: 0, black: 0, neutral: 0 };
-        state.colors.forEach((col) => c[col]++);
-        document.getElementById('countsBar').innerHTML =
-          `<span>Blue: <b>${c.blue}</b></span><span>Green: <b>${c.green}</b></span><span>Off the board: <b>${c.black}</b></span><span>Neutral: <b>${c.neutral}</b></span>`;
-      }
-
-      function renderSetupGrid() {
-        const grid = document.getElementById('setupGrid');
-        grid.innerHTML = '';
-        for (let i = 0; i < 25; i++) {
-          const cell = document.createElement('div');
-          cell.className = 'setup-cell';
-          cell.innerHTML = `
-      <input type="text" data-i="${i}" class="wordInput" value="${state.words[i]}">
-      <div class="swatches">
-        <div class="sw blue ${state.colors[i] === 'blue' ? 'active' : ''}" data-color="blue" data-i="${i}" title="Blue"></div>
-        <div class="sw green ${state.colors[i] === 'green' ? 'active' : ''}" data-color="green" data-i="${i}" title="Green"></div>
-        <div class="sw black ${state.colors[i] === 'black' ? 'active' : ''}" data-color="black" data-i="${i}" title="Off the board"></div>
-        <div class="sw neutral ${state.colors[i] === 'neutral' ? 'active' : ''}" data-color="neutral" data-i="${i}" title="Neutral"></div>
-      </div>
-    `;
-          grid.appendChild(cell);
-        }
-        grid.querySelectorAll('.wordInput').forEach((inp) => {
-          inp.addEventListener('input', (e) => {
-            state.words[e.target.dataset.i] = e.target.value.toUpperCase();
-          });
-        });
-        grid.querySelectorAll('.sw').forEach((sw) => {
-          sw.addEventListener('click', (e) => {
-            const i = e.target.dataset.i;
-            state.colors[i] = e.target.dataset.color;
-            renderSetupGrid();
-            renderCounts();
-          });
-        });
-        renderCounts();
-      }
-
-      document
-        .getElementById('timerDurationInput')
-        .addEventListener('input', (e) => {
-          const v = parseInt(e.target.value) || 60;
-          state.timer.total = v;
-          if (!state.timer.running) {
-            state.timer.remaining = v;
-          }
-        });
-
-      document.getElementById('clearReveals').addEventListener('click', () => {
-        state.revealed = Array(25).fill(false);
       });
 
       // init
