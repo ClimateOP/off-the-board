@@ -170,12 +170,16 @@
         flex-direction: column;
         gap: 10px;
       }
+      .team-panel.left {
+        --team-color: var(--blue);
+      }
       .team-panel.right {
+        --team-color: var(--green);
         align-items: flex-end;
       }
       .group {
         background: var(--panel);
-        border: 1px solid var(--line);
+        border: 1px solid var(--team-color);
         border-radius: 6px;
         padding: 10px 16px;
         width: 100%;
@@ -187,7 +191,7 @@
         color: var(--ink-dim);
         margin-bottom: 7px;
         padding-bottom: 6px;
-        border-bottom: 1px solid var(--line);
+        border-bottom: 2px solid var(--team-color);
       }
       .team-panel.right .group-label {
         text-align: right;
@@ -212,7 +216,7 @@
         cursor: pointer;
       }
       .pname-edit.active-view {
-        color: var(--blue);
+        color: var(--team-color);
       }
       .pname-edit[contenteditable='true'] {
         background: var(--panel-2);
